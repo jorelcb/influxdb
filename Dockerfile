@@ -1,9 +1,10 @@
-FROM tutum/curl:trusty
+FROM ubuntu:trusty
 MAINTAINER François-Guillaume Ribreau <docker@fgribreau.com>
 
 # Install InfluxDB
 ENV INFLUXDB_VERSION 0.12.1-1
-RUN curl -s -o /tmp/influxdb_latest_amd64.deb https://s3.amazonaws.com/influxdb/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists && \
+  curl -s -o /tmp/influxdb_latest_amd64.deb https://s3.amazonaws.com/influxdb/influxdb_${INFLUXDB_VERSION}_amd64.deb && \
   dpkg -i /tmp/influxdb_latest_amd64.deb && \
   rm /tmp/influxdb_latest_amd64.deb && \
   rm -rf /var/lib/apt/lists/*
@@ -22,6 +23,9 @@ EXPOSE 8083
 
 # HTTP API
 EXPOSE 8086
+
+# Graphite listener
+EXPOSE 2003
 
 # Raft port (for clustering, don't expose publicly!)
 #EXPOSE 8090
